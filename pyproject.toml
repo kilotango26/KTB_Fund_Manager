@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ktb-fund-manager"
 version = "1.0.0"
-description = "KTB Fund Manager - An AI-powered hedge fund for educational purposes"
+description = "KTB Fund Manager - An AI-powered hedge fund simulation using free OpenRouter models"
 authors = ["KTB <kboyle89@gmail.com>"]
 readme = "README.md"
 packages = [
@@ -10,37 +10,39 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
+
+# Core Framework
 langchain = "^0.3.7"
-langchain-anthropic = "^0.3.5"
+langgraph = "^0.2"
+
+# LLM Providers (OpenRouter compatible)
 langchain-openai = "^0.3.5"
-langgraph = "^0.2.56"
-pandas = "^2.1.0"
-numpy = "^1.24.0"
+
+# OpenRouter works via OpenAI-compatible API
+# No additional provider packages needed!
+
+# Utils
 python-dotenv = "^1.0.0"
-matplotlib = "^3.9.2"
-tabulate = "^0.9.0"
 colorama = "^0.4.6"
-questionary = "^2.1.0"
-rich = "^13.9.4"
-httpx = "^0.27.0"
-pydantic = "^2.4.2"
-fastapi = {extras = ["standard"], version = "^0.104.0"}
+rich = "^13.7.0"
+pydantic = "^2.0"
+
+# Date handling
+python-dateutil = "^2.8.2"
+
+# Data & Financial Analysis (optional but recommended)
+# yfinance = "^0.2.0"  # Uncomment for Yahoo Finance data
+# pandas = "^2.0"      # Uncomment for data analysis
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-black = "^23.7.0"
-isort = "^5.12.0"
-flake8 = "^6.1.0"
+pytest = "^8.0"
+black = "^24.0"
+python-dotenv = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 100
-target-version = ['py311']
-include = '\.pyi?$'
-
-[tool.isort]
-profile = "black"
-force_alphabetical_sort_within_sections = true
+[tool.poetry.scripts]
+hedge-fund = "src.main:main"
+backtest = "src.backtester:main"

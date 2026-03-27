@@ -9,8 +9,9 @@ Embodies the Oracle of Omaha's value investing philosophy:
 """
 
 import json
+import os
 from src.graph.state import AgentState
-from src.utils.llm import get_llm
+from src.utils.llm import get_agent_llm
 
 
 WARREN_BUFFETT_PROMPT = """You are Warren Buffett, the Oracle of Omaha and greatest value investor of all time.
@@ -38,23 +39,23 @@ DECISION RULES:
 
 Analyze {ticker} for the period {start_date} to {end_date}.
 
-Provide your signal as JSON:
-{{
-    "signal": "BUY|SELL|HOLD",
-    "confidence": 0-100,
-    "reasoning": "Explain your thesis",
-    "key_metrics": {{
-        "roe": "value",
-        "debt_equity": "value",
-        "pe_ratio": "value",
-        "fcf_growth": "value"
-    }}
-}}
+Provide ONLY a JSON response (no markdown, no code blocks):
+{"
+    "signal": "BUY",
+    "confidence": 85,
+    "reasoning": "Excellent ROE of 25% for 10 years, low debt, strong moat in technology ecosystem",
+    "key_metrics": {
+        "roe": "25% average 10yr",
+        "debt_equity": "0.3",
+        "pe_ratio": "25",
+        "fcf_growth": "12% annual"
+    }
+}
 """
 
 
 def warren_buffett_agent(state: AgentState) -> AgentState:
-    """Warren Buffett value investing agent."""
+    """Warren Buffett value investing agent using OpenRouter free models."""
     data = state["data"]
     metadata = state.get("metadata", {})
     
@@ -62,31 +63,44 @@ def warren_buffett_agent(state: AgentState) -> AgentState:
     start_date = data["start_date"]
     end_date = data["end_date"]
     
-    model_name = metadata.get("model_name", "gpt-4o")
-    model_provider = metadata.get("model_provider", "OpenAI")
-    llm = get_llm(model_name, model_provider, temperature=0.1)
+    # Get model from env or metadata, default to nemotron for finance
+    model = os.getenv("DEFAULT_MODEL", "nemotron")
+    
+    print(f"[Warren Buffett] Analyzing {len(tickers)} tickers using {model}...")
+    
+    llm = get_agent_llm("warren_buffett", model)
     
     signals = {}
     
     for ticker in tickers:
+        print(f"  Analyzing {ticker}...")
+        
         prompt = WARREN_BUFFETT_PROMPT.format(
             ticker=ticker,
             start_date=start_date,
             end_date=end_date,
         )
         
-        response = llm.invoke(prompt)
-        
         try:
-            signal = json.loads(response.content)
-        except json.JSONDecodeError:
+            response = llm.analyze(prompt)
+            signal = json.loads(response)
+        except json.JSONDecodeError as e:
+            print(f"    Warning: Could not parse JSON for {ticker}: {e}")
             signal = {
                 "signal": "HOLD",
                 "confidence": 50,
-                "reasoning": "Error parsing response",
+                "reasoning": "Error parsing LLM response - check model output format",
+            }
+        except Exception as e:
+            print(f"    Error analyzing {ticker}: {e}")
+            signal = {
+                "signal": "HOLD",
+                "confidence": 50,
+                "reasoning": f"Error in analysis: {str(e)}",
             }
         
         signals[ticker] = signal
+        print(f"    -> Signal: {signal.get('signal', 'HOLD')} (confidence: {signal.get('confidence', 50)}%)")
     
     # Update analyst signals
     if "analyst_signals" not in data:

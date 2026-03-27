@@ -1,46 +1,81 @@
 # KTB Fund Manager
 
-An AI-powered hedge fund simulation system for educational purposes. This project explores the use of AI agents to make trading decisions based on multiple investment strategies.
+An AI-powered hedge fund simulation system for educational purposes. 
+
+**Now powered by OpenRouter free models** - zero cost to start, no API key required!
 
 ## Overview
 
-KTB Fund Manager employs a team of AI agents, each embodying different investment philosophies and analytical approaches:
+KTB Fund Manager employs a team of AI agents, each embodying different investment philosophies and analytical approaches. This implementation uses **free/open-source models** via OpenRouter - no paid API keys required to get started.
 
-### Investment Strategy Agents
-- **Warren Buffett Agent** - Value investing: wonderful companies at fair prices
-- **Charlie Munger Agent** - Mental models and wonderful businesses
-- **Ben Graham Agent** - Deep value investing with margin of safety
-- **Peter Lynch Agent** - Growth investing in understandable businesses
-- **Cathie Wood Agent** - Disruptive innovation and high-growth themes
-- **Michael Burry Agent** - Contrarian deep value opportunities
-- **Stanley Druckenmiller Agent** - Macro-driven asymmetric opportunities
+## Why OpenRouter?
+
+| Provider | Cost | Free Tier | Best For |
+|----------|------|-----------|----------|
+| **OpenRouter** | **$0** | 15+ free models | Multi-model access, no card needed |
+| Groq | $0 | 14.4K req/day | Fast inference |
+| Together AI | $0 with limits | Various | Open-source models |
+| OpenAI/Anthropic | $$$ | None | Proprietary models |
+
+**Key Benefits:**
+- No credit card required
+- Access to 15+ free models including Llama 3.3 70B, gpt-oss-120b, NVIDIA Nemotron
+- Single API for multiple providers
+- Easily switch between models
+
+## Recommended Free Models
+
+### For Financial Analysis:
+1. **NVIDIA Nemotron 3 Super** (`nvidia/nemotron-3-super-120b-a12b:free`)
+   - 120B parameters, 262K context
+   - Ranked #24 in Finance benchmarks
+   - Best for: Complex financial reasoning
+
+2. **Llama 3.3 70B** (`meta-llama/llama-3.3-70b-instruct:free`)
+   - 70B parameters, 66K context  
+   - Strong general reasoning
+   - Best for: Balanced performance
+
+3. **Arcee Trinity** (`arcee-ai/trinity-large-preview:free`)
+   - 400B MoE parameters, 131K context
+   - Ranked #27 in Finance benchmarks
+   - Best for: Agent-specific tasks
+
+### For Agent Tasks:
+4. **Qwen3 Coder** (`qwen/qwen3-coder:free`)
+   - 480B MoE parameters, 35B active, 262K context
+   - Best for: JSON generation, structured outputs
+
+5. **gpt-oss-120b** (`openai/gpt-oss-120b:free`)
+   - 117B parameters, 131K context
+   - Best for: Configurable reasoning depth
+
+## Investment Strategy Agents
+
+### Legendary Investor Agents
+- **Warren Buffett Agent** - Value investing
+- **Charlie Munger Agent** - Mental models  
+- **Ben Graham Agent** - Deep value investing
+- **Peter Lynch Agent** - Growth investing
+- **Cathie Wood Agent** - Disruptive innovation
+- **Michael Burry Agent** - Contrarian deep value
+- **Stanley Druckenmiller Agent** - Macro investing
 
 ### Analysis Agents
 - **Fundamentals Agent** - Financial statement analysis
-- **Technical Agent** - Price action and technical indicators
-- **Sentiment Agent** - Market sentiment and news analysis
+- **Technical Agent** - Price action and indicators
+- **Sentiment Agent** - Market sentiment
 - **Valuation Agent** - Intrinsic value calculations
 
 ### Management Agents
 - **Risk Manager** - Position sizing and risk control
-- **Portfolio Manager** - Final trading decisions and execution
-
-## Disclaimer
-
-**This project is for educational and research purposes only.**
-
-- Not intended for real trading or investment
-- No investment advice or guarantees provided
-- Creator assumes no liability for financial losses
-- Consult a financial advisor for investment decisions
-- Past performance does not indicate future results
+- **Portfolio Manager** - Final trading decisions
 
 ## Installation
 
 ### Prerequisites
-
 - Python 3.11+
-- Poetry (recommended) or pip
+- Poetry
 
 ### Setup
 
@@ -50,103 +85,65 @@ git clone https://github.com/kilotango26/KTB_Fund_Manager.git
 cd KTB_Fund_Manager
 ```
 
-2. Install dependencies with Poetry:
+2. Install dependencies:
 ```bash
 poetry install
 ```
 
-Or with pip:
-```bash
-pip install -r requirements.txt
-```
-
-3. Set up your API keys:
+3. (Optional) Set up OpenRouter API key:
 ```bash
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env and add your OpenRouter key (free at openrouter.ai/keys)
 ```
+
+**Note:** Free models work WITHOUT an API key! Adding one increases rate limits.
 
 ## Usage
 
-### Running the Hedge Fund
+### Quick Start (No API Key Required)
 
-Basic usage:
 ```bash
 poetry run python src/main.py --ticker AAPL,MSFT,NVDA
 ```
 
-With date range:
-```bash
-poetry run python src/main.py --ticker AAPL,MSFT,NVDA --start-date 2024-01-01 --end-date 2024-03-01
-```
-
-Select specific analysts:
-```bash
-poetry run python src/main.py --ticker AAPL --analysts warren_buffett,ben_graham,technicals
-```
-
-### Running the Backtester
+### Select a Model
 
 ```bash
-poetry run python src/backtester.py --ticker AAPL,MSFT,NVDA
-```
-
-## Project Structure
-
-```
-KTB_Fund_Manager/
-├── src/
-│   ├── agents/           # AI agent implementations
-│   ├── utils/           # Utility functions
-│   ├── data/            # Data fetching and caching
-│   ├── graph/           # LangGraph workflow definitions
-│   ├── cli/             # Command-line interface
-│   ├── backtesting/     # Backtesting framework
-│   ├── main.py          # Main entry point
-│   └── backtester.py    # Backtesting entry point
-├── tests/               # Test suite
-├── app/                 # Web application (future)
-├── pyproject.toml       # Project dependencies
-└── README.md
+DEFAULT_MODEL=llama poetry run python src/main.py --ticker AAPL
 ```
 
 ## Configuration
 
-### API Keys Required
-
-1. **OpenAI API Key** - For GPT-4/GPT-4o models
-2. **Anthropic API Key** - For Claude models
-3. **Financial Datasets API Key** - For market data
-
-Set these in your `.env` file.
-
-## Development
-
-### Running Tests
+### Environment Variables (.env)
 
 ```bash
-poetry run pytest
+# Optional: OpenRouter API key for higher limits
+OPENROUTER_API_KEY=sk-or-v1-your-key-here
+
+# Default model
+DEFAULT_MODEL=nemotron
 ```
 
-### Code Formatting
+## Model Selection Guide
 
-```bash
-poetry run black src/
-poetry run isort src/
-```
+| Use Case | Model | Why |
+|----------|-------|-----|
+| General analysis | nemotron | #24 in Finance |
+| Complex reasoning | gpt_oss | OpenAI's model |
+| JSON generation | qwen | Optimized for code |
+| Long documents | trinity | 512K context |
+| Fast inference | llama | Well-balanced |
 
-## Contributing
+## Disclaimer
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+**This project is for educational and research purposes only.**
 
-## License
-
-MIT License - see LICENSE file for details.
+- Not intended for real trading
+- No warranties or guarantees
+- Past performance does not predict future results
 
 ## Acknowledgments
 
-Inspired by the [ai-hedge-fund](https://github.com/virattt/ai-hedge-fund) project by virattt.
+- Inspired by ai-hedge-fund by virattt
+- Powered by OpenRouter for free model access
+- Built with LangGraph for agent workflows
